@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fuzz dm/tools/nacp.py, the reader of an NSP's control.nacp (the app name, display version and languages).
-Seeds: a 0x4000-byte NACP with a name and publisher in two languages, a display version and a language flag, and one whose title area is compressed (u16 size + raw deflate).
+Seeds: a 0x4000-byte NACP with a name and publisher in two languages, a display version and a language flag, and one whose title area is compressed (u16 size + raw deflate,
+inflated no further than its 0x6000 bytes).
 Clean rejection: none raises; name() and version() return '' and languages() returns [] for data they cannot read (their docstrings). Any exception is a finding, and so is a
 result of another type. Usage: see fuzzlib.py"""
 import struct
@@ -11,6 +12,7 @@ import fuzzlib
 import nacp
 
 HARNESS = 'nacp'
+fuzzlib.guard(nacp)
 
 
 def title_area(names):   # 0x300 bytes per language: name 0x200 + publisher 0x100
